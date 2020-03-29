@@ -1,0 +1,14 @@
+E:\Proj\Arteko\FileParse\FileParse\bin\Debug\netcoreapp2.1\FileParse.deps.json
+E:\Proj\Arteko\FileParse\FileParse\bin\Debug\netcoreapp2.1\FileParse.runtimeconfig.json
+E:\Proj\Arteko\FileParse\FileParse\bin\Debug\netcoreapp2.1\FileParse.runtimeconfig.dev.json
+E:\Proj\Arteko\FileParse\FileParse\bin\Debug\netcoreapp2.1\FileParse.dll
+E:\Proj\Arteko\FileParse\FileParse\obj\Debug\netcoreapp2.1\FileParse.csprojAssemblyReference.cache
+E:\Proj\Arteko\FileParse\FileParse\obj\Debug\netcoreapp2.1\FileParse.csproj.CoreCompileInputs.cache
+E:\Proj\Arteko\FileParse\FileParse\obj\Debug\netcoreapp2.1\FileParse.RazorAssemblyInfo.cache
+E:\Proj\Arteko\FileParse\FileParse\obj\Debug\netcoreapp2.1\FileParse.RazorAssemblyInfo.cs
+E:\Proj\Arteko\FileParse\FileParse\obj\Debug\netcoreapp2.1\FileParse.AssemblyInfoInputs.cache
+E:\Proj\Arteko\FileParse\FileParse\obj\Debug\netcoreapp2.1\FileParse.AssemblyInfo.cs
+E:\Proj\Arteko\FileParse\FileParse\obj\Debug\netcoreapp2.1\FileParse.RazorTargetAssemblyInfo.cache
+E:\Proj\Arteko\FileParse\FileParse\bin\Debug\netcoreapp2.1\FileParse.pdb
+E:\Proj\Arteko\FileParse\FileParse\obj\Debug\netcoreapp2.1\FileParse.dll
+E:\Proj\Arteko\FileParse\FileParse\obj\Debug\netcoreapp2.1\FileParse.pdb
