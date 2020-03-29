@@ -9,6 +9,7 @@ using FileParse.Assets;
 using FileParse.Assets.Operation;
 using FileParse.Assets.Task;
 using FileParse.Model;
+using FileParse.ParseDbContext;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -34,6 +35,7 @@ namespace FileParse.Controllers
             string proccessFolder = _config.GetValue<string>("ProcessFolder");
             string errorFolder = _config.GetValue<string>("ErrorFolder");
             string filePattern = _config.GetValue<string>("FilePattern");
+            string connectionString = _config.GetValue<string>("connectionString");
 
             string sourceFolder = Path.Combine(parse.folderPath, inFolder);
             string destFolder = Path.Combine(parse.folderPath, proccessFolder);
@@ -42,6 +44,11 @@ namespace FileParse.Controllers
             ITask task = new TransferTask(sourceFolder, destFolder, filePattern);
             task.Run();
             //
+
+            using (ParseDb db = new ParseDb(connectionString))
+            {
+                Good g = db.Goods.FirstOrDefault(f => f.Id == 1);
+            }
 
             return StatusCode(500, task.ErrorMessage);
         }        
