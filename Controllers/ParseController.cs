@@ -25,27 +25,19 @@ namespace FileParse.Controllers
         public ParseController(IConfiguration config)
         {
             Config = config;
-        }        
+        }
+
+        // GET api/parse
+        [HttpGet]
+        public string Get()
+        {
+            return "Привет";
+        }
 
         // POST: api/Parse
         [HttpPost]
         public IActionResult Post(ParseRequest parseRequest)
         {
-            ////string inFolder = _config.GetValue<string>("InFolder");
-            ////string proccessFolder = _config.GetValue<string>("ProcessFolder");
-            ////string errorFolder = _config.GetValue<string>("ErrorFolder");
-            ////string filePattern = _config.GetValue<string>("FilePattern");
-            ////string connectionString = _config.GetValue<string>("connectionString");
-
-            ////string sourceFolder = Path.Combine(parse.folderPath, inFolder);
-            ////string destFolder = Path.Combine(parse.folderPath, proccessFolder);
-            ////string errFolder = Path.Combine(parse.folderPath, errorFolder);
-
-            /*using (ParseDb db = new ParseDb(connectionString))
-            {
-                Good g = db.Goods.FirstOrDefault(f => f.Id == 1);
-            }*/
-
             ParseProcess process = new ParseProcess();
 
             process.SetParm(Config);
