@@ -70,5 +70,10 @@ namespace FileParse.ParseDbContext
 
             return this;
         }
+
+        public Good ShallowCopy()
+        {
+            return (Good)this.MemberwiseClone();
+        }
     }
 }

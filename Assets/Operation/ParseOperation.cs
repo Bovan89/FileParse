@@ -12,11 +12,9 @@ namespace FileParse.Assets.Operation
     {
         private List<Good> Goods;
 
-        public string FilePath { get; set; }
+        private string FilePath { get; set; }
 
         private string FolderPath { get; set; }
-
-        public bool IsComplete { get; set; }
 
         public ParseOperation(string filePath, List<Good> goods)
         {
@@ -56,8 +54,6 @@ namespace FileParse.Assets.Operation
                     AddGood(good);                                        
                 }
             }
-
-            IsComplete = true;
         }
 
         private void AddGood(Good good)
@@ -77,11 +73,6 @@ namespace FileParse.Assets.Operation
             }
 
             Goods.Add(good);
-        }
-
-        public void Back()
-        {
-            IsComplete = false;
         }
     }
 

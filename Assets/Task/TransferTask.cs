@@ -9,76 +9,99 @@ namespace FileParse.Assets.Task
 {
     public class TransferTask : ITask
     {
-        public string  From { get; set; }
+        private string  From { get; set; }
 
-        public string To { get; set; }
+        private string To { get; set; }
 
-        public string FilePattern { get; set; }
+        private string FilePattern { get; set; }
 
-        public string ErrorMessage { get; set; }
+        private List<string> FileList { get; set; }
 
-        public List<IOperation> OperationList { get; set; }                
+        public List<string> ResultFileList { get; set; }        
+
+        //public bool IsSuccess { get; private set; }
 
         public TransferTask(string from, string to, string filePattern = null)
         {
             From = from;
+
             To = to;
-            FilePattern = filePattern;
 
-            Prepare();
+            FilePattern = filePattern;            
         }
 
-        void Prepare()
-        {
-            OperationList = new List<IOperation>();
+        public TransferTask(List<string> fileList, string to)
+        {   
+            To = to;
 
-            string[] files = null;
-            if (string.IsNullOrEmpty(FilePattern))
-            {
-                files = Directory.GetFiles(From);
-            }
-            else
-            {
-                files = Directory.GetFiles(From, FilePattern);
-            }
+            FileList = fileList;            
+        }        
 
-            foreach (string item in files)
-            {
-                OperationList.Add(new MoveOperation(item, To));
-            }
-        }
-
-        public bool Run()
+        public override bool Run()
         {
             try
             {
-                foreach (var operation in OperationList)
+                if (FileList == null && !string.IsNullOrEmpty(From))
                 {
-                    operation.Do();
+                    string[] files = null;
+                    if (string.IsNullOrEmpty(FilePattern))
+                    {
+                        files = Directory.GetFiles(From);
+                    }
+                    else
+                    {
+                        files = Directory.GetFiles(From, FilePattern);
+                    }
+
+                    FileList = new List<string>();
+
+                    foreach (string item in files)
+                    {
+                        FileList.Add(item);
+                    }
                 }
+
+                if (FileList?.Count > 0)
+                {
+                    if (!Directory.Exists(To))
+                    {
+                        Directory.CreateDirectory(To);
+                    }
+
+                    ResultFileList = new List<string>();
+
+                    foreach (var file in FileList)
+                    {
+                        string newFileName = Path.Combine(To, Path.GetFileName(file));
+
+                        File.Move(file, newFileName);
+
+                        ResultFileList.Add(newFileName);
+                    }
+                }                
             }
-            catch (Exception ex)
+            catch
             {
-                ErrorMessage = ex.Message;
-                Cancel();
-                return false;
+                Rollback();
+
+                throw;
             }
 
-            return true;
+            return true;            
         }
 
-        public void Cancel()
+        public void Rollback()
         {
-            foreach (var operation in OperationList.Where(o => o.IsComplete))
+            if (!string.IsNullOrEmpty(From) && ResultFileList != null)
             {
-                try
+                foreach (var file in ResultFileList)
                 {
-                    operation.Back();
+                    string newFileName = Path.Combine(From, Path.GetFileName(file));
+
+                    File.Move(file, newFileName);
                 }
-                catch
-                {
-                    continue;
-                }
+
+                ResultFileList.Clear();
             }
         }
     }

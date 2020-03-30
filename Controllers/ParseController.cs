@@ -20,50 +20,44 @@ namespace FileParse.Controllers
     [ApiController]
     public class ParseController : ControllerBase
     {
-        private readonly IConfiguration _config;
+        private readonly IConfiguration Config;
 
         public ParseController(IConfiguration config)
         {
-            _config = config;
+            Config = config;
         }        
 
         // POST: api/Parse
         [HttpPost]
-        public IActionResult Post(ParseRequest parse)
+        public IActionResult Post(ParseRequest parseRequest)
         {
-            string inFolder = _config.GetValue<string>("InFolder");
-            string proccessFolder = _config.GetValue<string>("ProcessFolder");
-            string errorFolder = _config.GetValue<string>("ErrorFolder");
-            string filePattern = _config.GetValue<string>("FilePattern");
-            string connectionString = _config.GetValue<string>("connectionString");
+            ////string inFolder = _config.GetValue<string>("InFolder");
+            ////string proccessFolder = _config.GetValue<string>("ProcessFolder");
+            ////string errorFolder = _config.GetValue<string>("ErrorFolder");
+            ////string filePattern = _config.GetValue<string>("FilePattern");
+            ////string connectionString = _config.GetValue<string>("connectionString");
 
-            string sourceFolder = Path.Combine(parse.folderPath, inFolder);
-            string destFolder = Path.Combine(parse.folderPath, proccessFolder);
-            string errFolder = Path.Combine(parse.folderPath, errorFolder);
+            ////string sourceFolder = Path.Combine(parse.folderPath, inFolder);
+            ////string destFolder = Path.Combine(parse.folderPath, proccessFolder);
+            ////string errFolder = Path.Combine(parse.folderPath, errorFolder);
 
-            //
-            ITask curTask;
-
-            curTask = new TransferTask(sourceFolder, destFolder, filePattern);            
-            if (curTask.Run())
-            {                
-                curTask = new ParseTask(destFolder, errFolder, filePattern);
-                if (curTask.Run())
-                {
-
-                }
-                //
-            }
-            //
-
-
-
-            using (ParseDb db = new ParseDb(connectionString))
+            /*using (ParseDb db = new ParseDb(connectionString))
             {
                 Good g = db.Goods.FirstOrDefault(f => f.Id == 1);
+            }*/
+
+            ParseProcess process = new ParseProcess();
+
+            process.SetParm(Config);
+
+            process.Start(parseRequest.folderPath);
+
+            if (!process.IsSuccess)
+            {
+                return StatusCode(500, process.Error);
             }
 
-            return StatusCode(500, curTask.ErrorMessage);
+            return StatusCode(200);
         }        
     }
 }

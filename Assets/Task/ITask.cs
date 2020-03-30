@@ -6,14 +6,16 @@ using System.Threading.Tasks;
 
 namespace FileParse.Assets.Task
 {
-    interface ITask
+    public abstract class ITask
     {
-        string ErrorMessage { get; set; }
+        //bool IsSuccess { get; }
 
-        List<IOperation> OperationList { get; set; }
+        //string Error { get; set; }
 
-        bool Run();
+        //List<IOperation> OperationList { get; set; }
 
-        void Cancel();
+        public abstract bool Run();
+
+        //void Cancel();
     }
 }

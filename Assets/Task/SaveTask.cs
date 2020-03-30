@@ -4,57 +4,71 @@ using System.Linq;
 using System.Threading.Tasks;
 using FileParse.Assets.Operation;
 using FileParse.ParseDbContext;
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace FileParse.Assets.Task
 {
     public class SaveTask : ITask
     {
-        private List<Good> Goods { get; set; }
-        public string From { get; set; }
-        public string ErrorFolder { get; set; }
-        public string FilePattern { get; set; }
-        public string ErrorMessage { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public List<IOperation> OperationList { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        private List<Good> Goods { get; set; }                
 
-        public SaveTask(string from, string errorFolder, List<Good> goods, string filePattern = null)
+        private string ConnectionString { get; set; }
+
+        public List<IOperation> OperationList { get; set; }
+
+        public ParseDb parseDb { get; private set; }
+
+        public SaveTask(List<Good> goods, string connectionString)
         {
-            From = from;
-            ErrorFolder = errorFolder;
             Goods = goods;
-            FilePattern = filePattern;
+            ConnectionString = connectionString;
 
             Prepare();
         }
 
         public void Prepare()
         {
-            foreach (var item in Goods)
-            {
+            OperationList = new List<IOperation>();
 
+            var goodGroup = from g in Goods
+                    group g by new { g.OrderNum, g.Material, g.Size } into gg
+                    select new
+                    {
+                        Good = Goods.First(gf => gf.OrderNum == gg.Key.OrderNum && gf.Material == gg.Key.Material && gf.Size == gg.Key.Size),
+                        Count = gg.Count()
+                    };
+
+            foreach (var item in goodGroup)
+            {
+                OperationList.Add(new SaveOperation(item.Good, item.Count));
             }
         }
 
-        public void Cancel()
+        public override bool Run()
         {
-            //Перенос в папку ERROR
-            var transferTask = new TransferTask(From, ErrorFolder, FilePattern);
-            transferTask.Run();
-        }
-
-        public bool Run()
-        {
-            try
+            using (ParseDb db = new ParseDb(ConnectionString))
             {
-                foreach (var operation in OperationList)
+                using (IDbContextTransaction transaction = db.Database.BeginTransaction())
                 {
-                    operation.Do();
+                    try
+                    {
+                        foreach (SaveOperation operation in OperationList)
+                        {
+                            operation.ParseDb = db;
+                            operation.Do();
+                        }
+
+                        db.SaveChanges();
+
+                        transaction.Commit();
+                    }
+                    catch
+                    {
+                        transaction.Rollback();
+
+                        throw;
+                    }
                 }
-            }
-            catch (Exception ex)
-            {
-                ErrorMessage = ex.Message;
-                Cancel();
-                return false;
             }
 
             return true;

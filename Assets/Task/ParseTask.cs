@@ -10,66 +10,59 @@ namespace FileParse.Assets.Task
 {
     public class ParseTask : ITask
     {
-        public string From { get; set; }
-        public string ErrorFolder { get; set; }
-        public string FilePattern { get; set; }
-        public string ErrorMessage { get; set; }
-        public List<IOperation> OperationList { get; set; }
+        //public string Error { get; set; }
+
+        private List<IOperation> OperationList { get; set; }
+
+        private List<string> FileList { get; set; }
+
         private List<Good> Goods { get; set; }
-        public ParseTask(string from, string errorFolder, string filePattern = null)
+
+        //public bool IsSuccess { get; private set; }
+
+        public ParseTask(List<string> fileList, List<Good> goods)
         {
-            From = from;
-            ErrorFolder = errorFolder;
-            FilePattern = filePattern;
+            FileList = fileList;
+            Goods = goods;
 
             Prepare();
         }
 
-        public void Prepare()
-        {
-            Goods = new List<Good>();
+        private void Prepare()
+        {            
             OperationList = new List<IOperation>();
 
-            string[] files = null;
-            if (string.IsNullOrEmpty(FilePattern))
-            {
-                files = Directory.GetFiles(From);
-            }
-            else
-            {
-                files = Directory.GetFiles(From, FilePattern);
-            }
-
-            foreach (string item in files)
+            foreach (string item in FileList)
             {
                 OperationList.Add(new ParseOperation(item, Goods));
             }
         }
 
-        public void Cancel()
+        public override bool Run()
         {
-            //Перенос в папку ERROR
-            var transferTask = new TransferTask(From, ErrorFolder, FilePattern);
-            transferTask.Run();
-        }
+            //try
+            //{
 
-        public bool Run()
-        {
-            try
+            foreach (var operation in OperationList)
             {
-                foreach (var operation in OperationList)
-                {
-                    operation.Do();
-                }
+                operation.Do();
             }
-            catch (Exception ex)
-            {
-                ErrorMessage = ex.Message;
-                Cancel();
-                return false;
-            }            
 
             return true;
+
+            /*}
+            catch (Exception ex)
+            {
+                Error = ex.Message;
+
+                IsSuccess = false;
+
+                return IsSuccess;
+            }
+
+            IsSuccess = true;
+
+            return IsSuccess;*/
         }
     }
 }
