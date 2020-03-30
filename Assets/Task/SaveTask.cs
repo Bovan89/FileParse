@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using FileParse.Assets.Operation;
@@ -8,18 +7,20 @@ using FileParse.ParseDbContext;
 
 namespace FileParse.Assets.Task
 {
-    public class ParseTask : ITask
+    public class SaveTask : ITask
     {
+        private List<Good> Goods { get; set; }
         public string From { get; set; }
         public string ErrorFolder { get; set; }
         public string FilePattern { get; set; }
-        public string ErrorMessage { get; set; }
-        public List<IOperation> OperationList { get; set; }
-        private List<Good> Goods { get; set; }
-        public ParseTask(string from, string errorFolder, string filePattern = null)
+        public string ErrorMessage { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public List<IOperation> OperationList { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+
+        public SaveTask(string from, string errorFolder, List<Good> goods, string filePattern = null)
         {
             From = from;
             ErrorFolder = errorFolder;
+            Goods = goods;
             FilePattern = filePattern;
 
             Prepare();
@@ -27,22 +28,9 @@ namespace FileParse.Assets.Task
 
         public void Prepare()
         {
-            Goods = new List<Good>();
-            OperationList = new List<IOperation>();
+            foreach (var item in Goods)
+            {
 
-            string[] files = null;
-            if (string.IsNullOrEmpty(FilePattern))
-            {
-                files = Directory.GetFiles(From);
-            }
-            else
-            {
-                files = Directory.GetFiles(From, FilePattern);
-            }
-
-            foreach (string item in files)
-            {
-                OperationList.Add(new ParseOperation(item, Goods));
             }
         }
 
@@ -67,7 +55,7 @@ namespace FileParse.Assets.Task
                 ErrorMessage = ex.Message;
                 Cancel();
                 return false;
-            }            
+            }
 
             return true;
         }

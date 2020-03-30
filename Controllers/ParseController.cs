@@ -39,18 +39,31 @@ namespace FileParse.Controllers
 
             string sourceFolder = Path.Combine(parse.folderPath, inFolder);
             string destFolder = Path.Combine(parse.folderPath, proccessFolder);
+            string errFolder = Path.Combine(parse.folderPath, errorFolder);
 
             //
-            ITask task = new TransferTask(sourceFolder, destFolder, filePattern);
-            task.Run();
+            ITask curTask;
+
+            curTask = new TransferTask(sourceFolder, destFolder, filePattern);            
+            if (curTask.Run())
+            {                
+                curTask = new ParseTask(destFolder, errFolder, filePattern);
+                if (curTask.Run())
+                {
+
+                }
+                //
+            }
             //
+
+
 
             using (ParseDb db = new ParseDb(connectionString))
             {
                 Good g = db.Goods.FirstOrDefault(f => f.Id == 1);
             }
 
-            return StatusCode(500, task.ErrorMessage);
+            return StatusCode(500, curTask.ErrorMessage);
         }        
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using OfficeOpenXml;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -45,5 +46,29 @@ namespace FileParse.ParseDbContext
         public int? ShipQty { get; set; }
         public int? RejecQty { get; set; }
         public string SourceFolder { get; set; }
+
+        public Good()
+        {
+
+        }
+
+        public Good Check()
+        {
+            //Проверки
+            if (OnOrdQty == null || OnOrdQty.Value < 0)
+            {
+                throw new Exception("Данные поля OnOrdQty не правильного формата");
+            }
+            if (ShipQty == null || ShipQty.Value < 0)
+            {
+                throw new Exception("Данные поля ShipQty не правильного формата");
+            }
+            if (RejecQty == null || RejecQty.Value < 0)
+            {
+                throw new Exception("Данные поля RejecQty не правильного формата");
+            }
+
+            return this;
+        }
     }
 }
