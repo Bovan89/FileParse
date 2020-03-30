@@ -53,7 +53,7 @@ namespace FileParse.Assets.Operation
 
         private void UpdateGoods(List<Good> simpleGoods)
         {
-            if (simpleGoods?.Count <= Count)
+            if (simpleGoods?.Count <= Count && simpleGoods?.Count > 0)
             {
                 foreach (var item in simpleGoods.Where(g => g.OrderType != GoodData.OrderType || g.SoldTo != GoodData.SoldTo || g.CustName != GoodData.CustName))
                 {
