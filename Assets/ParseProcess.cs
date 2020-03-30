@@ -54,7 +54,7 @@ namespace FileParse.Assets
 
                     List<Good> goods = new List<Good>();
 
-                    ParseTask parseTask = new ParseTask(filelist, goods);
+                    ParseTask parseTask = new ParseTask(filelist, goods, sourceFolder);
                     if (parseTask.Run())
                     {
                         if (goods.Count > 0)

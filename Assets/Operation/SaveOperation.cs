@@ -15,7 +15,7 @@ namespace FileParse.Assets.Operation
 
         public bool IsComplete { get; set; }
 
-        public ParseDb ParseDb { get; set; }
+        public ParseDb ParseDb { private get; set; }
 
         public SaveOperation(Good good, int count)
         {
@@ -23,14 +23,8 @@ namespace FileParse.Assets.Operation
             Count = count;
         }
 
-        public void Back()
-        {
-            IsComplete = false;
-        }
-
         public void Do()
-        {
-            //Найти в системе по этому сочетанию            
+        {            
             if (ParseDb != null)
             {
                 List<Good> simpleGoods = ParseDb.Goods.Where(g => g.OrderNum == Good.OrderNum && g.Material == Good.Material && g.Size == Good.Size).ToList();
@@ -39,33 +33,34 @@ namespace FileParse.Assets.Operation
 
                 InsertGoods(simpleGoods);
             }
-
-            IsComplete = true;
         }
 
         private void InsertGoods(List<Good> simpleGoods)
         {
-            if (simpleGoods.Count < Count)
-            {
-                //Add (Count - simpleGoods.Count) recs
+            if (simpleGoods?.Count < Count)
+            {                
                 for (int i = 0; i < (Count - simpleGoods.Count); i++)
                 {
                     ParseDb.Goods.Add(Good.ShallowCopy());
                 }
+
                 ParseDb.SaveChanges();
             }
         }
 
         private void UpdateGoods(List<Good> simpleGoods)
         {
-            foreach (var item in simpleGoods.Where(g => g.OrderType != Good.OrderType || g.SoldTo != Good.SoldTo || g.CustName != Good.CustName))
+            if (simpleGoods?.Count > 0)
             {
-                item.OrderType = Good.OrderType;
-                item.SoldTo = Good.SoldTo;
-                item.CustName = Good.CustName;
-            }
+                foreach (var item in simpleGoods.Where(g => g.OrderType != Good.OrderType || g.SoldTo != Good.SoldTo || g.CustName != Good.CustName))
+                {
+                    item.OrderType = Good.OrderType;
+                    item.SoldTo = Good.SoldTo;
+                    item.CustName = Good.CustName;
+                }
 
-            ParseDb.SaveChanges();
+                ParseDb.SaveChanges();
+            }
         }
     }
 }

@@ -10,59 +10,44 @@ namespace FileParse.Assets.Task
 {
     public class ParseTask : ITask
     {
-        //public string Error { get; set; }
-
         private List<IOperation> OperationList { get; set; }
+
+        private string SourceFolder { get; set; }
 
         private List<string> FileList { get; set; }
 
         private List<Good> Goods { get; set; }
 
-        //public bool IsSuccess { get; private set; }
-
-        public ParseTask(List<string> fileList, List<Good> goods)
+        public ParseTask(List<string> fileList, List<Good> goods, string sourceFolder)
         {
             FileList = fileList;
             Goods = goods;
+            SourceFolder = sourceFolder;
 
             Prepare();
         }
 
         private void Prepare()
-        {            
-            OperationList = new List<IOperation>();
-
-            foreach (string item in FileList)
+        {
+            if (FileList?.Count > 0)
             {
-                OperationList.Add(new ParseOperation(item, Goods));
+                OperationList = new List<IOperation>();
+
+                foreach (string item in FileList)
+                {
+                    OperationList.Add(new ParseOperation(item, Goods, SourceFolder));
+                }
             }
         }
 
-        public override bool Run()
+        public bool Run()
         {
-            //try
-            //{
-
             foreach (var operation in OperationList)
             {
                 operation.Do();
             }
 
             return true;
-
-            /*}
-            catch (Exception ex)
-            {
-                Error = ex.Message;
-
-                IsSuccess = false;
-
-                return IsSuccess;
-            }
-
-            IsSuccess = true;
-
-            return IsSuccess;*/
         }
     }
 }

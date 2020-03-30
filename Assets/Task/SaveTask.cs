@@ -14,9 +14,9 @@ namespace FileParse.Assets.Task
 
         private string ConnectionString { get; set; }
 
-        public List<IOperation> OperationList { get; set; }
+        private List<IOperation> OperationList { get; set; }
 
-        public ParseDb parseDb { get; private set; }
+        private ParseDb parseDb { get; set; }
 
         public SaveTask(List<Good> goods, string connectionString)
         {
@@ -26,7 +26,7 @@ namespace FileParse.Assets.Task
             Prepare();
         }
 
-        public void Prepare()
+        private void Prepare()
         {
             OperationList = new List<IOperation>();
 
@@ -44,7 +44,7 @@ namespace FileParse.Assets.Task
             }
         }
 
-        public override bool Run()
+        public bool Run()
         {
             using (ParseDb db = new ParseDb(ConnectionString))
             {

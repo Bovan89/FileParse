@@ -19,8 +19,6 @@ namespace FileParse.Assets.Task
 
         public List<string> ResultFileList { get; set; }        
 
-        //public bool IsSuccess { get; private set; }
-
         public TransferTask(string from, string to, string filePattern = null)
         {
             From = from;
@@ -37,7 +35,7 @@ namespace FileParse.Assets.Task
             FileList = fileList;            
         }        
 
-        public override bool Run()
+        public bool Run()
         {
             try
             {
@@ -78,7 +76,11 @@ namespace FileParse.Assets.Task
 
                         ResultFileList.Add(newFileName);
                     }
-                }                
+                }
+                else
+                {
+                    return false;
+                }
             }
             catch
             {

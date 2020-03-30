@@ -7,10 +7,6 @@ namespace FileParse.Assets.Operation
 {
     public interface IOperation
     {
-        //bool IsComplete { get; set; }
-
         void Do();
-
-        //void Back();
     }
 }

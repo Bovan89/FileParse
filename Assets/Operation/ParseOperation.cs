@@ -10,17 +10,19 @@ namespace FileParse.Assets.Operation
 {
     public class ParseOperation : IOperation
     {
-        private List<Good> Goods;
+        private List<Good> Goods { get; set; }
 
-        private string FilePath { get; set; }
+        private string FilePath { get; set; }        
 
-        private string FolderPath { get; set; }
+        private string SourceFolder { get; set; }
 
-        public ParseOperation(string filePath, List<Good> goods)
+        public ParseOperation(string filePath, List<Good> goods, string sourceFolder)
         {
             FilePath = filePath;
-            FolderPath = Path.GetDirectoryName(FilePath);
+
             Goods = goods;
+
+            SourceFolder = sourceFolder;
         }
 
         public void Do()
@@ -48,7 +50,7 @@ namespace FileParse.Assets.Operation
                         OnOrdQty = worksheet.Cells[row, 12].ValueInt(),
                         ShipQty = worksheet.Cells[row, 13].ValueInt(),
                         RejecQty = worksheet.Cells[row, 14].ValueInt(),
-                        SourceFolder = FolderPath
+                        SourceFolder = SourceFolder
                     }.Check();
 
                     AddGood(good);                                        
@@ -76,7 +78,7 @@ namespace FileParse.Assets.Operation
         }
     }
 
-    public static class ExcelExtension
+    static class ExcelExtension
     {
         public static string Value(this ExcelRange excelRange)
         {            
