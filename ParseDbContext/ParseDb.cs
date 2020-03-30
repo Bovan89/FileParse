@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using FileParse.Model;
+using Microsoft.EntityFrameworkCore;
 using OfficeOpenXml;
 using System;
 using System.Collections.Generic;
@@ -31,20 +32,17 @@ namespace FileParse.ParseDbContext
     {
         [Key]
         public int Id { get; set; }
-        public int? SoldTo { get; set; }
+        public string SoldTo { get; set; }
         public string CustName { get; set; }
-        public int? ShipTo { get; set; }
+        public string ShipTo { get; set; }
         public string ShipToName { get; set; }
         public string OrderType { get; set; }
-        public int? Dv { get; set; }
-        public long? OrderNum { get; set; }
+        public string Dv { get; set; }
+        public string OrderNum { get; set; }
         public string Material { get; set; }
         public string MatDes { get; set; }
-        public decimal? Size { get; set; }
-        public decimal? AltSize { get; set; }
-        public int? OnOrdQty { get; set; }
-        public int? ShipQty { get; set; }
-        public int? RejecQty { get; set; }
+        public string Size { get; set; }
+        public string AltSize { get; set; }        
         public string SourceFolder { get; set; }
 
         public Good()
@@ -52,28 +50,23 @@ namespace FileParse.ParseDbContext
 
         }
 
-        public Good Check()
+        public static Good Create(GoodData goodData)
         {
-            //Проверки
-            if (OnOrdQty == null || OnOrdQty.Value < 0)
+            return new Good
             {
-                throw new Exception("Данные поля OnOrdQty не правильного формата");
-            }
-            if (ShipQty == null || ShipQty.Value < 0)
-            {
-                throw new Exception("Данные поля ShipQty не правильного формата");
-            }
-            if (RejecQty == null || RejecQty.Value < 0)
-            {
-                throw new Exception("Данные поля RejecQty не правильного формата");
-            }
-
-            return this;
-        }
-
-        public Good ShallowCopy()
-        {
-            return (Good)this.MemberwiseClone();
+                SoldTo = goodData.SoldTo,
+                CustName = goodData.CustName,
+                ShipTo = goodData.ShipTo,
+                ShipToName = goodData.ShipToName,
+                OrderType = goodData.OrderType,
+                Dv = goodData.Dv,
+                OrderNum = goodData.OrderNum,
+                Material = goodData.Material,
+                MatDes = goodData.MatDes,
+                Size = goodData.Size,
+                AltSize = goodData.AltSize,
+                SourceFolder = goodData.SourceFolder
+            };
         }
     }
 }

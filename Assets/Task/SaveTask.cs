@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FileParse.Assets.Operation;
+using FileParse.Model;
 using FileParse.ParseDbContext;
 using Microsoft.EntityFrameworkCore.Storage;
 
@@ -10,7 +11,7 @@ namespace FileParse.Assets.Task
 {
     public class SaveTask : ITask
     {
-        private List<Good> Goods { get; set; }                
+        private List<GoodData> GoodData { get; set; }                
 
         private string ConnectionString { get; set; }
 
@@ -18,9 +19,9 @@ namespace FileParse.Assets.Task
 
         private ParseDb parseDb { get; set; }
 
-        public SaveTask(List<Good> goods, string connectionString)
+        public SaveTask(List<GoodData> goodData, string connectionString)
         {
-            Goods = goods;
+            GoodData = goodData;
             ConnectionString = connectionString;
 
             Prepare();
@@ -30,17 +31,17 @@ namespace FileParse.Assets.Task
         {
             OperationList = new List<IOperation>();
 
-            var goodGroup = from g in Goods
-                    group g by new { g.OrderNum, g.Material, g.Size } into gg
-                    select new
-                    {
-                        Good = Goods.First(gf => gf.OrderNum == gg.Key.OrderNum && gf.Material == gg.Key.Material && gf.Size == gg.Key.Size),
-                        Count = gg.Count()
-                    };
+            var goodGroup = from g in GoodData
+                            group g by new { g.OrderNum, g.Material, g.Size } into gg
+                            select new
+                            {
+                                Good = GoodData.First(gf => gf.OrderNum == gg.Key.OrderNum && gf.Material == gg.Key.Material && gf.Size == gg.Key.Size),
+                                AllQty = gg.Sum(s => s.OnOrdQty) + gg.Sum(s => s.ShipQty)
+                            };
 
             foreach (var item in goodGroup)
             {
-                OperationList.Add(new SaveOperation(item.Good, item.Count));
+                OperationList.Add(new SaveOperation(item.Good, item.AllQty));
             }
         }
 

@@ -1,4 +1,5 @@
 ﻿using FileParse.Assets.Task;
+using FileParse.Model;
 using FileParse.ParseDbContext;
 using System;
 using System.Collections.Generic;
@@ -9,7 +10,7 @@ namespace FileParse.Assets.Operation
 {
     public class SaveOperation : IOperation
     {
-        private Good Good { get; set; }
+        private GoodData GoodData { get; set; }
 
         private int Count { get; set; }
 
@@ -17,9 +18,9 @@ namespace FileParse.Assets.Operation
 
         public ParseDb ParseDb { private get; set; }
 
-        public SaveOperation(Good good, int count)
+        public SaveOperation(GoodData goodData, int count)
         {
-            Good = good;
+            GoodData = goodData;
             Count = count;
         }
 
@@ -27,7 +28,9 @@ namespace FileParse.Assets.Operation
         {            
             if (ParseDb != null)
             {
-                List<Good> simpleGoods = ParseDb.Goods.Where(g => g.OrderNum == Good.OrderNum && g.Material == Good.Material && g.Size == Good.Size).ToList();
+                List<Good> simpleGoods = ParseDb.Goods.Where(g => 
+                    g.OrderNum == GoodData.OrderNum && g.Material == GoodData.Material && g.Size == GoodData.Size
+                    ).ToList();
 
                 UpdateGoods(simpleGoods);
 
@@ -41,7 +44,7 @@ namespace FileParse.Assets.Operation
             {                
                 for (int i = 0; i < (Count - simpleGoods.Count); i++)
                 {
-                    ParseDb.Goods.Add(Good.ShallowCopy());
+                    ParseDb.Goods.Add(Good.Create(GoodData));
                 }
 
                 ParseDb.SaveChanges();
@@ -50,13 +53,13 @@ namespace FileParse.Assets.Operation
 
         private void UpdateGoods(List<Good> simpleGoods)
         {
-            if (simpleGoods?.Count > 0)
+            if (simpleGoods?.Count <= Count)
             {
-                foreach (var item in simpleGoods.Where(g => g.OrderType != Good.OrderType || g.SoldTo != Good.SoldTo || g.CustName != Good.CustName))
+                foreach (var item in simpleGoods.Where(g => g.OrderType != GoodData.OrderType || g.SoldTo != GoodData.SoldTo || g.CustName != GoodData.CustName))
                 {
-                    item.OrderType = Good.OrderType;
-                    item.SoldTo = Good.SoldTo;
-                    item.CustName = Good.CustName;
+                    item.OrderType = GoodData.OrderType;
+                    item.SoldTo = GoodData.SoldTo;
+                    item.CustName = GoodData.CustName;
                 }
 
                 ParseDb.SaveChanges();

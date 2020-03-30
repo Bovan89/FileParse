@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using FileParse.Assets.Operation;
-using FileParse.ParseDbContext;
+using FileParse.Model;
 
 namespace FileParse.Assets.Task
 {
@@ -16,12 +16,12 @@ namespace FileParse.Assets.Task
 
         private List<string> FileList { get; set; }
 
-        private List<Good> Goods { get; set; }
+        private List<GoodData> GoodData { get; set; }
 
-        public ParseTask(List<string> fileList, List<Good> goods, string sourceFolder)
+        public ParseTask(List<string> fileList, List<GoodData> goodData, string sourceFolder)
         {
             FileList = fileList;
-            Goods = goods;
+            GoodData = goodData;
             SourceFolder = sourceFolder;
 
             Prepare();
@@ -35,7 +35,7 @@ namespace FileParse.Assets.Task
 
                 foreach (string item in FileList)
                 {
-                    OperationList.Add(new ParseOperation(item, Goods, SourceFolder));
+                    OperationList.Add(new ParseOperation(item, GoodData, SourceFolder));
                 }
             }
         }

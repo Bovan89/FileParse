@@ -1,4 +1,5 @@
 ﻿using FileParse.Assets.Task;
+using FileParse.Model;
 using FileParse.ParseDbContext;
 using Microsoft.Extensions.Configuration;
 using System;
@@ -52,7 +53,7 @@ namespace FileParse.Assets
 
                     backFolder = errorFolder;
 
-                    List<Good> goods = new List<Good>();
+                    List<GoodData> goods = new List<GoodData>();
 
                     ParseTask parseTask = new ParseTask(filelist, goods, sourceFolder);
                     if (parseTask.Run())

@@ -1,26 +1,25 @@
-﻿using FileParse.ParseDbContext;
+﻿using FileParse.Model;
 using OfficeOpenXml;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace FileParse.Assets.Operation
 {
     public class ParseOperation : IOperation
     {
-        private List<Good> Goods { get; set; }
+        private List<GoodData> GoodData { get; set; }
 
         private string FilePath { get; set; }        
 
         private string SourceFolder { get; set; }
 
-        public ParseOperation(string filePath, List<Good> goods, string sourceFolder)
+        public ParseOperation(string filePath, List<GoodData> goodData, string sourceFolder)
         {
             FilePath = filePath;
 
-            Goods = goods;
+            GoodData = goodData;
 
             SourceFolder = sourceFolder;
         }
@@ -34,47 +33,47 @@ namespace FileParse.Assets.Operation
 
                 for (int row = 2; row <= rowCount; row++)
                 {
-                    var good = new Good
+                    var goodData = new GoodData
                     {
-                        SoldTo = worksheet.Cells[row, 1].ValueInt(),
+                        SoldTo = worksheet.Cells[row, 1].Value(),
                         CustName = worksheet.Cells[row, 2].Value(),
-                        ShipTo = worksheet.Cells[row, 3].ValueInt(),
+                        ShipTo = worksheet.Cells[row, 3].Value(),
                         ShipToName = worksheet.Cells[row, 4].Value(),
                         OrderType = worksheet.Cells[row, 5].Value(),
-                        Dv = worksheet.Cells[row, 6].ValueInt(),
-                        OrderNum = worksheet.Cells[row, 7].ValueLong(),
+                        Dv = worksheet.Cells[row, 6].Value(),
+                        OrderNum = worksheet.Cells[row, 7].Value(),
                         Material = worksheet.Cells[row, 8].Value(),
                         MatDes = worksheet.Cells[row, 9].Value(),
-                        Size = worksheet.Cells[row, 10].ValueDecimal(),
-                        AltSize = worksheet.Cells[row, 11].ValueDecimal(),
+                        Size = worksheet.Cells[row, 10].Value(),
+                        AltSize = worksheet.Cells[row, 11].Value(),
                         OnOrdQty = worksheet.Cells[row, 12].ValueInt(),
                         ShipQty = worksheet.Cells[row, 13].ValueInt(),
                         RejecQty = worksheet.Cells[row, 14].ValueInt(),
                         SourceFolder = SourceFolder
                     }.Check();
 
-                    AddGood(good);                                        
+                    AddGood(goodData);                                        
                 }
             }
         }
 
-        private void AddGood(Good good)
+        private void AddGood(GoodData goodData)
         {
-            Good existGood = Goods.FirstOrDefault(g => g.OrderNum == good.OrderNum && g.Material == good.Material && g.Size == good.Size);
+            GoodData existGood = GoodData.FirstOrDefault(g => g.OrderNum == goodData.OrderNum && g.Material == goodData.Material && g.Size == goodData.Size);
 
             if (existGood != null)
             {
-                good.OnOrdQty += existGood.OnOrdQty;
-                good.ShipQty += existGood.ShipQty;                
+                goodData.OnOrdQty += existGood.OnOrdQty;
+                goodData.ShipQty += existGood.ShipQty;                
 
-                foreach (var item in Goods.Where(g => g.OrderNum == good.OrderNum && g.Material == good.Material && g.Size == good.Size))
+                foreach (var item in GoodData.Where(g => g.OrderNum == goodData.OrderNum && g.Material == goodData.Material && g.Size == goodData.Size))
                 {
-                    item.OnOrdQty = good.OnOrdQty;
-                    item.ShipQty = good.ShipQty;
+                    item.OnOrdQty = goodData.OnOrdQty;
+                    item.ShipQty = goodData.ShipQty;
                 }
             }
 
-            Goods.Add(good);
+            GoodData.Add(goodData);
         }
     }
 
@@ -88,16 +87,6 @@ namespace FileParse.Assets.Operation
         public static int ValueInt(this ExcelRange excelRange)
         {
             return Convert.ToInt32(excelRange.Value.ToString());
-        }
-
-        public static long ValueLong(this ExcelRange excelRange)
-        {
-            return Convert.ToInt64(excelRange.Value.ToString());
-        }
-
-        public static decimal ValueDecimal(this ExcelRange excelRange)
-        {
-            return Convert.ToDecimal(excelRange.Value.ToString());
         }
     }
 }
