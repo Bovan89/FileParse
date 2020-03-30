@@ -33,6 +33,9 @@ namespace FileParse.Assets.Operation
 
                 for (int row = 2; row <= rowCount; row++)
                 {
+                    if (worksheet.Cells[row, 1].Value == null)
+                        break;
+
                     var goodData = new GoodData
                     {
                         SoldTo = worksheet.Cells[row, 1].Value(),
@@ -63,17 +66,13 @@ namespace FileParse.Assets.Operation
 
             if (existGood != null)
             {
-                goodData.OnOrdQty += existGood.OnOrdQty;
-                goodData.ShipQty += existGood.ShipQty;                
-
-                foreach (var item in GoodData.Where(g => g.OrderNum == goodData.OrderNum && g.Material == goodData.Material && g.Size == goodData.Size))
-                {
-                    item.OnOrdQty = goodData.OnOrdQty;
-                    item.ShipQty = goodData.ShipQty;
-                }
+                existGood.OnOrdQty += goodData.OnOrdQty;
+                existGood.ShipQty += goodData.ShipQty;
             }
-
-            GoodData.Add(goodData);
+            else
+            {
+                GoodData.Add(goodData);
+            }
         }
     }
 
